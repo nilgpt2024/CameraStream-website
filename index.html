@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="page_title">Camera Stream Monitor - 摄像头流媒体监控</title>
+    <meta name="description" content="Camera Stream Monitor 是一款专业的 Android 视频监控应用，支持实时推流、高清录制、多协议传输。">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --primary-light: #42A5F5;
+            --accent: #00BCD4;
+            --bg: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text-primary: #1A1A2E;
+            --text-secondary: #555770;
+            --text-muted: #8888A0;
+            --border: #E8EAF0;
+            --gradient-hero: linear-gradient(135deg, #0D47A1 0%, #1976D2 40%, #42A5F5 100%);
+            --gradient-accent: linear-gradient(135deg, #00BCD4, #26C6DA);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* ===== Navigation ===== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+        .nav.scrolled {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-sm);
+            padding: 12px 40px;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        .nav.scrolled .nav-logo { color: var(--primary); }
+        .nav-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav.scrolled .nav-links a { color: var(--text-secondary); }
+        .nav-links a:hover { color: white; }
+        .nav.scrolled .nav-links a:hover { color: var(--primary); }
+
+        /* Language Switcher */
+        .lang-switcher {
+            position: relative;
+            z-index: 10;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            background: transparent;
+            color: white;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            position: relative;
+            z-index: 10;
+        }
+        .scrolled .lang-btn {
+            border-color: var(--border);
+            color: var(--text-secondary);
+            background: var(--bg);
+        }
+        .scrolled .lang-btn:hover {
+            border-color: var(--primary-light);
+            color: var(--primary);
+        }
+        .lang-btn:hover { border-color: rgba(255,255,255,0.6); }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            min-height: 100vh;
+            background: var(--gradient-hero);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 40px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(66,165,245,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(to top, var(--bg), transparent);
+        }
+        .hero-inner {
+            max-width: 1100px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-text h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            line-height: 1.15;
+            margin-bottom: 18px;
+            letter-spacing: -0.5px;
+        }
+        .hero-text h1 span {
+            background: linear-gradient(135deg, #4FC3F7, #81D4FA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-text p {
+            font-size: 17px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 32px;
+            max-width: 480px;
+            line-height: 1.75;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s ease;
+        }
+        .btn-primary {
+            background: white;
+            color: var(--primary-dark);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px rgba(0,0,0,0.22);
+        }
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.7);
+        }
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero-phone {
+            width: 280px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 36px;
+            padding: 10px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.05);
+            transform: rotateY(-8deg) rotateX(4deg);
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: rotateY(-8deg) rotateX(4deg) translateY(0); }
+            50% { transform: rotateY(-8deg) rotateX(4deg) translateY(-12px); }
+        }
+        .hero-phone img {
+            width: 100%;
+            border-radius: 26px;
+            display: block;
+        }
+        .hero-badges {
+            display: flex;
+            gap: 16px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 20px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* ===== Section Common ===== */
+        .section {
+            padding: 90px 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .section-tag {
+            display: inline-block;
+            padding: 5px 16px;
+            background: linear-gradient(135deg, rgba(25,118,210,0.08), rgba(0,188,212,0.08));
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+        .section-title {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+            letter-spacing: -0.5px;
+        }
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* ===== Features Grid ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 32px 26px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-hero);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 18px;
+        }
+        .feature-icon.blue { background: #E3F2FD; color: #1976D2; }
+        .feature-icon.cyan { background: #E0F7FA; color: #00838F; }
+        .feature-icon.purple { background: #EDE7F6; color: #512DA8; }
+        .feature-icon.green { background: #E8F5E9; color: #2E7D32; }
+        .feature-icon.orange { background: #FFF3E0; color: #E65100; }
+        .feature-icon.red { background: #FFEBEE; color: #C62828; }
+        .feature-card h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* ===== Advantages Section ===== */
+        .advantages-section {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F0F4FF 100%);
+            padding: 90px 40px;
+        }
+        .advantages-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+        }
+        .advantage-item {
+            display: flex;
+            gap: 18px;
+            padding: 28px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .advantage-item:hover {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(25,118,210,0.2);
+        }
+        .advantage-num {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--gradient-hero);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .advantage-content h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .advantage-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ===== Screenshots ===== */
+        .screenshots-scroll {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px 0 20px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .screenshots-scroll::-webkit-scrollbar { height: 6px; }
+        .screenshots-scroll::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 3px; }
+        .screenshots-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+        .screenshot-item {
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            transition: transform 0.3s;
+        }
+        .screenshot-item:hover { transform: scale(1.03); }
+        .screenshot-item img {
+            display: block;
+            width: 260px;
+            height: auto;
+        }
+        .screenshot-caption {
+            padding: 12px 16px;
+            background: var(--card-bg);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ===== Tech Stack ===== */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .tech-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 22px 18px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .tech-item:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+        .tech-item h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .tech-item p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== Download Section ===== */
+        .download-section {
+            background: var(--gradient-hero);
+            padding: 90px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .download-section::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -20%;
+            width: 60%;
+            height: 180%;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+        }
+        .download-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .download-inner .section-title,
+        .download-inner .section-desc {
+            color: white;
+        }
+        .download-inner .section-desc { opacity: 0.85; }
+        .download-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 44px;
+        }
+        .download-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .download-card:hover {
+            background: rgba(255,255,255,0.16);
+            transform: translateY(-4px);
+        }
+        .download-card-icon {
+            font-size: 36px;
+            margin-bottom: 14px;
+        }
+        .download-card h3 {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .download-card p {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: white;
+            color: var(--primary-dark);
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+        }
+        .download-info {
+            margin-top: 36px;
+            padding: 20px 28px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+        .download-info span {
+            color: rgba(255,255,255,0.75);
+            font-size: 13px;
+        }
+        .download-info strong {
+            color: white;
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: #0D1424;
+            padding: 48px 40px 28px;
+            text-align: center;
+        }
+        .footer-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .footer-logo img {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+        }
+        .footer-logo span {
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: white; }
+        .footer-copy {
+            color: rgba(255,255,255,0.3);
+            font-size: 12px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 900px) {
+            .hero-inner { grid-template-columns: 1fr; text-align: center; }
+            .hero-text p { margin-left: auto; margin-right: auto; }
+            .hero-actions { justify-content: center; }
+            .hero-badges { justify-content: center; }
+            .hero-visual { order: -1; }
+            .hero-phone { width: 220px; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .advantages-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+            .download-cards { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 580px) {
+            .hero { padding: 100px 20px 60px; }
+            .hero-text h1 { font-size: 32px; }
+            .section { padding: 60px 20px; }
+            .section-title { font-size: 26px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: 1fr 1fr; }
+            .nav { padding: 12px 20px; }
+            .nav.scrolled { padding: 10px 20px; }
+            .download-info { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-left">
+            <a href="#" class="nav-logo">
+                <img src="assets/icon-512.png" alt="Logo">
+                Camera Stream Monitor
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features" data-i18n="nav_features">功能特性</a></li>
+                <li><a href="#advantages" data-i18n="nav_advantages">核心优势</a></li>
+                <li><a href="#screenshots" data-i18n="nav_screenshots">应用截图</a></li>
+                <li><a href="#tech" data-i18n="nav_tech">技术架构</a></li>
+                <li><a href="#download" data-i18n="nav_download">立即下载</a></li>
+            </ul>
+        </div>
+        <div class="lang-switcher">
+            <button class="lang-btn" id="langBtn" title="Switch Language">
+                <span id="langLabel">中文</span> &#x25BE;
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="hero-text">
+                <h1 data-i18n="hero_title">专业的 <span>摄像头流媒体监控</span> 工具</h1>
+                <p data-i18n="hero_desc">实时视频预览、多协议推流、高清录制，一站式满足您的视频监控与直播需求。支持 RTMP / RTSP / SRT 等主流流媒体协议。</p>
+                <div class="hero-actions">
+                    <a href="#download" class="btn btn-primary" data-i18n="hero_btn_download">&#x2B07; 下载 APK</a>
+                    <a href="https://github.com/nilgpt2024/Camera-Stream-Monitor" target="_blank" class="btn btn-outline" data-i18n="hero_btn_source">&#x1F4BB; 查看源码</a>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge" data-i18n="badge_multi_cam">&#128247; 多摄像头支持</span>
+                    <span class="badge" data-i18n="badge_protocols">&#128225; RTMP/RTSP/SRT</span>
+                    <span class="badge" data-i18n="badge_record">&#128190; 本地录制</span>
+                    <span class="badge" data-i18n="badge_privacy">&#128274; 隐私优先</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-phone">
+                    <img src="assets/screenshot-1.png" alt="App Preview">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+        <div class="section-header">
+            <span class="section-tag">FEATURES</span>
+            <h2 class="section-title" data-i18n="features_title">强大的功能特性</h2>
+            <p class="section-desc" data-i18n="features_desc">从摄像头采集到网络推流，提供完整的视频处理能力</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon blue">&#128247;</div>
+                <h3 data-i18n="feat_cam_title">多摄像头管理</h3>
+                <p data-i18n="feat_cam_desc">支持前置和后置摄像头独立管理，可同时开启双摄模式进行前后画面同步录制。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon cyan">&#128225;</div>
+                <h3 data-i18n="feat_stream_title">多协议推流</h3>
+                <p data-i18n="feat_stream_desc">支持 RTMP、RTSP、SRT、UDP 四种主流推流协议，适配各种直播和监控场景。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon purple">&#128190;</div>
+                <h3 data-i18n="feat_record_title">高清视频录制</h3>
+                <p data-i18n="feat_record_desc">最高支持 1080P 高清录制，后台持续录制服务，熄屏后依然正常工作。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green">&#127911;</div>
+                <h3 data-i18n="feat_audio_title">音频同步采集</h3>
+                <p data-i18n="feat_audio_desc">视频录制时自动同步采集麦克风音频，推流时也可选择是否携带音频。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange">&#128269;</div>
+                <h3 data-i18n="feat_p2p_title">P2P 直连模式</h3>
+                <p data-i18n="feat_p2p_desc">无需中转服务器，通过 RTSP 协议实现设备间点对点直连传输。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon red">&#9729;&#65039;</div>
+                <h3 data-i18n="feat_webdav_title">WebDAV 云存储</h3>
+                <p data-i18n="feat_webdav_desc">支持 WebDAV 协议自动上传录制文件到 NAS 或云存储服务器。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advantages -->
+    <section class="advantages-section" id="advantages">
+        <div class="advantages-inner">
+            <div class="section-header">
+                <span class="section-tag">WHY CHOOSE US</span>
+                <h2 class="section-title" data-i18n="adv_title">为什么选择我们</h2>
+                <p class="section-desc" data-i18n="adv_desc">六大核心优势，让视频监控更简单高效</p>
+            </div>
+            <div class="advantages-grid">
+                <div class="advantage-item">
+                    <div class="advantage-num">1</div>
+                    <div class="advantage-content">
+                        <h3 data-i18n="adv_1_title">完全本地化，隐私无忧</h3>
+                        <p data-i18n="adv_1_desc">所有数据存储在您的本地设备上，不收集任何个人身份信息。不运营云服务器，您的数据完全由您掌控。</p>
+                    </div>
+                </div>
+                <div class="advantage-item">
+                    <div class="advantage-num">2</div>
+                    <div class="advantage-content">
+                        <h3 data-i18n="adv_2_title">零依赖推流体验</h3>
+                        <p data-i18n="adv_2_desc">内置 RTSP 直连模式，无需配置任何外部服务器即可在局域网内实现视频传输，开箱即用。</p>
+                    </div>
+                </div>
+                <div class="advantage-item">
+                    <div class="advantage-num">3</div>
+                    <div class="advantage-content">
+                        <h3 data-i18n="adv_3_title">专业级播放引擎</h3>
+                        <p data-i18n="adv_3_desc">基于 Google Media3 ExoPlayer 构建，支持 RTMP / RTSP / HLS / DASH / 本地文件等多种格式播放。</p>
+                    </div>
+                </div>
+                <div class="advantage-item">
+                    <div class="advantage-num">4</div>
+                    <div class="advantage-content">
+                        <h3 data-i18n="adv_4_title">灵活的参数配置</h3>
+                        <p data-i18n="adv_4_desc">分辨率（720P/1080P）、帧率（15/24/30fps）、比特率（1000-8000kbps）均可自由调节。</p>
+                    </div>
+                </div>
+                <div class="advantage-item">
+                    <div class="advantage-num">5</div>
+                    <div class="advantage-content">
+                        <h3 data-i18n="adv_5_title">现代化 UI 设计</h3>
+                        <p data-i18n="adv_5_desc">采用 Material Design 3 设计语言，底部导航栏操作便捷，实时状态指示器一目了然。</p>
+                    </div>
+                </div>
+                <div class="advantage-item">
+                    <div class="advantage-num">6</div>
+                    <div class="advantage-content">
+                        <h3 data-i18n="adv_6_title">开源免费 &amp; 中英双语</h3>
+                        <p data-i18n="adv_6_desc">MIT 开源许可，完全免费使用。内置中文/英文双语界面，一键切换语言。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="section" id="screenshots">
+        <div class="section-header">
+            <span class="section-tag">SCREENSHOTS</span>
+            <h2 class="section-title" data-i18n="shots_title">应用截图</h2>
+            <p class="section-desc" data-i18n="shots_desc">简洁直观的操作界面，让您快速上手</p>
+        </div>
+        <div class="screenshots-scroll">
+            <div class="screenshot-item">
+                <img src="assets/screenshot-1.png" alt="Main Interface">
+                <div class="screenshot-caption" data-i18n="shot_1">主界面 - 摄像头列表</div>
+            </div>
+            <div class="screenshot-item">
+                <img src="assets/screenshot-2.png" alt="Player">
+                <div class="screenshot-caption" data-i18n="shot_2">播放器 - 远程观看</div>
+            </div>
+            <div class="screenshot-item">
+                <img src="assets/screenshot-3.png" alt="Settings">
+                <div class="screenshot-caption" data-i18n="shot_3">设置 - 参数配置</div>
+            </div>
+            <div class="screenshot-item">
+                <img src="assets/screenshot-4.png" alt="Recordings">
+                <div class="screenshot-caption" data-i18n="shot_4">录制记录 - 文件管理</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="section" id="tech">
+        <div class="section-header">
+            <span class="section-tag">TECH STACK</span>
+            <h2 class="section-title" data-i18n="tech_title">技术架构</h2>
+            <p class="section-desc" data-i18n="tech_desc">基于业界领先的 Android 技术栈构建</p>
+        </div>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <h4>CameraX</h4>
+                <p data-i18n="tech_camerax">Google 现代摄像头 API</p>
+            </div>
+            <div class="tech-item">
+                <h4>Media3 ExoPlayer</h4>
+                <p data-i18n="tech_exoplayer">专业视频播放引擎</p>
+            </div>
+            <div class="tech-item">
+                <h4>RootEncoder</h4>
+                <p data-i18n="tech_rootencoder">高效音视频编码器</p>
+            </div>
+            <div class="tech-item">
+                <h4>Kotlin Coroutines</h4>
+                <p data-i18n="tech_coroutines">异步编程框架</p>
+            </div>
+            <div class="tech-item">
+                <h4>Material Design 3</h4>
+                <p data-i18n="tech_md3">现代 UI 设计系统</p>
+            </div>
+            <div class="tech-item">
+                <h4>MVVM</h4>
+                <p data-i18n="tech_mvvm">清晰的代码结构</p>
+            </div>
+            <div class="tech-item">
+                <h4>ViewBinding</h4>
+                <p data-i18n="tech_viewbinding">类型安全的视图访问</p>
+            </div>
+            <div class="tech-item">
+                <h4>OkHttp</h4>
+                <p data-i18n="tech_okhttp">高性能 HTTP 客户端</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download -->
+    <section class="download-section" id="download">
+        <div class="download-inner">
+            <span class="section-tag" style="background:rgba(255,255,255,0.12);color:white;">DOWNLOAD</span>
+            <h2 class="section-title" data-i18n="dl_title">立即下载体验</h2>
+            <p class="section-desc" data-i18n="dl_desc">选择适合您的安装方式，开始使用 Camera Stream Monitor</p>
+
+            <div class="download-cards">
+                <div class="download-card">
+                    <div class="download-card-icon">&#128241;</div>
+                    <h3 data-i18n="dl_apk_title">APK 直接安装</h3>
+                    <p data-i18n="dl_apk_desc">下载 APK 文件直接安装到 Android 设备</p>
+                    <a href="app-release.apk" class="download-btn" download data-i18n="dl_apk_btn">&#x2B07; 下载 Release APK</a>
+                </div>
+                <div class="download-card">
+                    <div class="download-card-icon">&#128187;</div>
+                    <h3 data-i18n="dl_build_title">从源码构建</h3>
+                    <p data-i18n="dl_build_desc">克隆仓库后自行编译，完全可控</p>
+                    <a href="https://github.com/nilgpt2024/Camera-Stream-Monitor" target="_blank" class="download-btn" data-i18n="dl_build_btn">&#x1F4BB; 访问 GitHub</a>
+                </div>
+            </div>
+
+            <div class="download-info">
+                <span><strong data-i18n="dl_info_version">版本:</strong> 最新版</span>
+                <span><strong data-i18n="dl_info_minsdk">最低系统:</strong> Android 8.0 (API 26)</span>
+                <span><strong data-i18n="dl_info_targetsdk">目标系统:</strong> Android 14 (API 34)</span>
+                <span><strong data-i18n="dl_info_size">大小:</strong> 约 15MB</span>
+                <span><strong data-i18n="dl_info_license">许可证:</strong> MIT (开源免费)</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">
+            <img src="assets/icon-512.png" alt="Logo">
+            <span>Camera Stream Monitor</span>
+        </div>
+        <div class="footer-links">
+            <a href="https://github.com/nilgpt2024/Camera-Stream-Monitor" target="_blank">GitHub</a>
+            <a href="https://github.com/nilgpt2024/Camera-Stream-Monitor/issues" target="_blank" data-i18n="footer_issues">问题反馈</a>
+            <a href="privacy-policy.html" data-i18n="footer_privacy">隐私政策</a>
+            <a href="mailto:nilgpt2024@github.com" data-i18n="footer_contact">联系我们</a>
+        </div>
+        <div class="footer-copy" data-i18n="footer_copy">&copy; 2026 AndWin. Released under MIT License.</div>
+    </footer>
+
+    <script>
+    // ========== i18n ==========
+    const i18n = {
+        zh: {
+            lang_label: '中文',
+            page_title: 'Camera Stream Monitor - 摄像头流媒体监控',
+            nav_features: '功能特性',
+            nav_advantages: '核心优势',
+            nav_screenshots: '应用截图',
+            nav_tech: '技术架构',
+            nav_download: '立即下载',
+            hero_title: '专业的 <span>摄像头流媒体监控</span> 工具',
+            hero_desc: '实时视频预览、多协议推流、高清录制，一站式满足您的视频监控与直播需求。支持 RTMP / RTSP / SRT 等主流流媒体协议。',
+            hero_btn_download: '\u2B07 下载 APK',
+            hero_btn_source: '💻 查看源码',
+            badge_multi_cam: '\uD83D\uDCF7 多摄像头支持',
+            badge_protocols: '\uD83D\uDC21 RTMP/RTSP/SRT',
+            badge_record: '\uD83D\uDCBE 本地录制',
+            badge_privacy: '\uD83D\uDD10 隐私优先',
+            features_title: '强大的功能特性',
+            features_desc: '从摄像头采集到网络推流，提供完整的视频处理能力',
+            feat_cam_title: '多摄像头管理',
+            feat_cam_desc: '支持前置和后置摄像头独立管理，可同时开启双摄模式进行前后画面同步录制。',
+            feat_stream_title: '多协议推流',
+            feat_stream_desc: '支持 RTMP、RTSP、SRT、UDP 四种主流推流协议，适配各种直播和监控场景。',
+            feat_record_title: '高清视频录制',
+            feat_record_desc: '最高支持 1080P 高清录制，后台持续录制服务，熄屏后依然正常工作。',
+            feat_audio_title: '音频同步采集',
+            feat_audio_desc: '视频录制时自动同步采集麦克风音频，推流时也可选择是否携带音频。',
+            feat_p2p_title: 'P2P 直连模式',
+            feat_p2p_desc: '无需中转服务器，通过 RTSP 协议实现设备间点对点直连传输。',
+            feat_webdav_title: 'WebDAV 云存储',
+            feat_webdav_desc: '支持 WebDAV 协议自动上传录制文件到 NAS 或云存储服务器。',
+            adv_title: '为什么选择我们',
+            adv_desc: '六大核心优势，让视频监控更简单高效',
+            adv_1_title: '完全本地化，隐私无忧',
+            adv_1_desc: '所有数据存储在您的本地设备上，不收集任何个人身份信息。不运营云服务器，您的数据完全由您掌控。',
+            adv_2_title: '零依赖推流体验',
+            adv_2_desc: '内置 RTSP 直连模式，无需配置任何外部服务器即可在局域网内实现视频传输，开箱即用。',
+            adv_3_title: '专业级播放引擎',
+            adv_3_desc: '基于 Google Media3 ExoPlayer 构建，支持 RTMP / RTSP / HLS / DASH / 本地文件等多种格式播放。',
+            adv_4_title: '灵活的参数配置',
+            adv_4_desc: '分辨率（720P/1080P）、帧率（15/24/30fps）、比特率（1000-8000kbps）均可自由调节。',
+            adv_5_title: '现代化 UI 设计',
+            adv_5_desc: '采用 Material Design 3 设计语言，底部导航栏操作便捷，实时状态指示器一目了然。',
+            adv_6_title: '开源免费 &amp; 中英双语',
+            adv_6_desc: 'MIT 开源许可，完全免费使用。内置中文/英文双语界面，一键切换语言。',
+            shots_title: '应用截图',
+            shots_desc: '简洁直观的操作界面，让您快速上手',
+            shot_1: '主界面 - 摄像头列表',
+            shot_2: '播放器 - 远程观看',
+            shot_3: '设置 - 参数配置',
+            shot_4: '录制记录 - 文件管理',
+            tech_title: '技术架构',
+            tech_desc: '基于业界领先的 Android 技术栈构建',
+            tech_camerax: 'Google 现代摄像头 API',
+            tech_exoplayer: '专业视频播放引擎',
+            tech_rootencoder: '高效音视频编码器',
+            tech_coroutines: '异步编程框架',
+            tech_md3: '现代 UI 设计系统',
+            tech_mvvm: '清晰的代码结构',
+            tech_viewbinding: '类型安全的视图访问',
+            tech_okhttp: '高性能 HTTP 客户端',
+            dl_title: '立即下载体验',
+            dl_desc: '选择适合您的安装方式，开始使用 Camera Stream Monitor',
+            dl_apk_title: 'APK 直接安装',
+            dl_apk_desc: '下载 APK 文件直接安装到 Android 设备',
+            dl_apk_btn: '\u2B07 下载 Release APK',
+            dl_build_title: '从源码构建',
+            dl_build_desc: '克隆仓库后自行编译，完全可控',
+            dl_build_btn: '💻 访问 GitHub',
+            dl_info_version: '版本:',
+            dl_info_minsdk: '最低系统:',
+            dl_info_targetsdk: '目标系统:',
+            dl_info_size: '大小:',
+            dl_info_license: '许可证:',
+            footer_issues: '问题反馈',
+            footer_privacy: '隐私政策',
+            footer_contact: '联系我们',
+            footer_copy: '\u00A9 2026 AndWin. Released under MIT License.'
+        },
+        en: {
+            lang_label: 'EN',
+            page_title: 'Camera Stream Monitor - Video Streaming & Monitoring',
+            nav_features: 'Features',
+            nav_advantages: 'Advantages',
+            nav_screenshots: 'Screenshots',
+            nav_tech: 'Tech Stack',
+            nav_download: 'Download',
+            hero_title: 'Professional <span>Camera Stream Monitor</span> Tool',
+            hero_desc: 'Real-time video preview, multi-protocol streaming, HD recording — an all-in-one solution for video surveillance and live streaming. Supports RTMP / RTSP / SRT protocols.',
+            hero_btn_download: '\u2B07 Download APK',
+            hero_btn_source: '💻 View Source',
+            badge_multi_cam: '\uD83D\uDCF7 Multi-Camera Support',
+            badge_protocols: '\uD83D\uDC21 RTMP/RTSP/SRT',
+            badge_record: '\uD83D\uDCBE Local Recording',
+            badge_privacy: '\uD83D\uDD10 Privacy First',
+            features_title: 'Powerful Features',
+            features_desc: 'Complete video processing pipeline from camera capture to network streaming',
+            feat_cam_title: 'Multi-Camera Management',
+            feat_cam_desc: 'Independent front and rear camera management with dual-camera mode for simultaneous recording.',
+            feat_stream_title: 'Multi-Protocol Streaming',
+            feat_stream_desc: 'Supports RTMP, RTSP, SRT, UDP streaming protocols for various live streaming and monitoring scenarios.',
+            feat_record_title: 'HD Video Recording',
+            feat_record_desc: 'Up to 1080P recording with background recording service that works even when the screen is off.',
+            feat_audio_title: 'Audio Sync Capture',
+            feat_audio_desc: 'Automatically captures microphone audio during video recording. Optional audio for streaming.',
+            feat_p2p_title: 'P2P Direct Mode',
+            feat_p2p_desc: 'No relay server needed. Peer-to-peer direct transfer between devices via RTSP protocol.',
+            feat_webdav_title: 'WebDAV Cloud Storage',
+            feat_webdav_desc: 'Auto-upload recordings to NAS or cloud storage servers via WebDAV protocol.',
+            adv_title: 'Why Choose Us',
+            adv_desc: 'Six core advantages making video monitoring simpler and more efficient',
+            adv_1_title: 'Fully Local, Privacy-Focused',
+            adv_1_desc: 'All data stays on your local device. No personal info collected. No cloud servers — you are in full control of your data.',
+            adv_2_title: 'Zero-Dependency Streaming',
+            adv_2_desc: 'Built-in RTSP direct mode enables LAN video transfer without any external server configuration. Works out of the box.',
+            adv_3_title: 'Professional Playback Engine',
+            adv_3_desc: 'Powered by Google Media3 ExoPlayer. Supports RTMP / RTSP / HLS / DASH / local files and more.',
+            adv_4_title: 'Flexible Configuration',
+            adv_4_desc: 'Resolution (720P/1080P), frame rate (15/24/30fps), bitrate (1000-8000kbps) — all freely adjustable.',
+            adv_5_title: 'Modern UI Design',
+            adv_5_desc: 'Material Design 3 language with bottom navigation bar and real-time status indicators at a glance.',
+            adv_6_title: 'Open Source &amp; Bilingual',
+            adv_6_desc: 'MIT licensed, completely free. Built-in Chinese/English bilingual interface with one-tap language switching.',
+            shots_title: 'App Screenshots',
+            shots_desc: 'Clean and intuitive interface to get you started quickly',
+            shot_1: 'Main - Camera List',
+            shot_2: 'Player - Remote Viewing',
+            shot_3: 'Settings - Configuration',
+            shot_4: 'Recordings - File Management',
+            tech_title: 'Tech Stack',
+            tech_desc: 'Built with industry-leading Android technologies',
+            tech_camerax: "Google's Modern Camera API",
+            tech_exoplayer: 'Professional Video Player Engine',
+            tech_rootencoder: 'Efficient AV Encoder',
+            tech_coroutines: 'Async Programming Framework',
+            tech_md3: 'Modern UI Design System',
+            tech_mvvm: 'Clean Code Architecture',
+            tech_viewbinding: 'Type-Safe View Access',
+            tech_okhttp: 'High-Performance HTTP Client',
+            dl_title: 'Download Now',
+            dl_desc: 'Choose your preferred installation method to start using Camera Stream Monitor',
+            dl_apk_title: 'Direct APK Install',
+            dl_apk_desc: 'Download the APK file and install directly on your Android device',
+            dl_apk_btn: '\u2B07 Download Release APK',
+            dl_build_title: 'Build from Source',
+            dl_build_desc: 'Clone the repo and compile yourself — fully customizable',
+            dl_build_btn: '💻 Visit GitHub',
+            dl_info_version: 'Version:',
+            dl_info_minsdk: 'Min SDK:',
+            dl_info_targetsdk: 'Target SDK:',
+            dl_info_size: 'Size:',
+            dl_info_license: 'License:',
+            footer_issues: 'Issue Tracker',
+            footer_privacy: 'Privacy Policy',
+            footer_contact: 'Contact Us',
+            footer_copy: '\u00A9 2026 AndWin. Released under MIT License.'
+        }
+    };
+
+    let currentLang = localStorage.getItem('csm-lang') || 'zh';
+
+    function applyLang(lang) {
+        currentLang = lang;
+        const t = i18n[lang];
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+        // Update page title
+        const titleEl = document.querySelector('[data-i18n="page_title"]');
+        if (titleEl) document.title = t.page_title;
+
+        // Update all translatable elements
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) el.innerHTML = t[key];
+        });
+
+        // Update lang button label
+        document.getElementById('langLabel').textContent = t.lang_label;
+
+        localStorage.setItem('csm-lang', lang);
+    }
+
+    // Toggle language
+    document.getElementById('langBtn').addEventListener('click', () => {
+        applyLang(currentLang === 'zh' ? 'en' : 'zh');
+    });
+
+    // Apply saved language on load
+    applyLang(currentLang);
+
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    </script>
+</body>
+</html>
