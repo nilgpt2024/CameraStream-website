@@ -262,6 +262,123 @@
             color: rgba(255,255,255,0.9);
         }
 
+        /* ===== POV Section (First-Person Video Collection) ===== */
+        .pov-section {
+            background: linear-gradient(180deg, #F0F4FF 0%, #FFFFFF 100%);
+            padding: 90px 40px;
+        }
+        .pov-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .pov-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+        .pov-video-wrapper {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            background: #000;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        .pov-video-wrapper video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 9/16;
+            object-fit: cover;
+        }
+        .pov-video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pov-play-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .pov-play-btn:hover { background: rgba(255,255,255,0.35); }
+        .pov-video-label {
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .pov-content h3 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: -0.3px;
+        }
+        .pov-content p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            margin-bottom: 24px;
+        }
+        .pov-highlights {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .pov-highlight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--card-bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            transition: all 0.25s;
+        }
+        .pov-highlight-item:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-sm);
+        }
+        .pov-highlight-icon {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .pov-highlight-text strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .pov-highlight-text span {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
         /* ===== Section Common ===== */
         .section {
             padding: 90px 40px;
@@ -627,6 +744,8 @@
             .tech-grid { grid-template-columns: repeat(2, 1fr); }
             .download-cards { grid-template-columns: 1fr; }
             .nav-links { display: none; }
+            .pov-layout { grid-template-columns: 1fr; }
+            .pov-video-wrapper { order: -1; }
         }
         @media (max-width: 580px) {
             .hero { padding: 100px 20px 60px; }
@@ -651,10 +770,10 @@
                 Camera Stream Monitor
             </a>
             <ul class="nav-links">
+                <li><a href="#pov" data-i18n="nav_pov">第一视角采集</a></li>
                 <li><a href="#features" data-i18n="nav_features">功能特性</a></li>
                 <li><a href="#advantages" data-i18n="nav_advantages">核心优势</a></li>
                 <li><a href="#screenshots" data-i18n="nav_screenshots">应用截图</a></li>
-                <li><a href="#tech" data-i18n="nav_tech">技术架构</a></li>
                 <li><a href="#download" data-i18n="nav_download">立即下载</a></li>
             </ul>
         </div>
@@ -669,16 +788,18 @@
     <section class="hero">
         <div class="hero-inner">
             <div class="hero-text">
-                <h1 data-i18n="hero_title">专业的 <span>摄像头流媒体监控</span> 工具</h1>
-                <p data-i18n="hero_desc">实时视频预览、多协议推流、高清录制，一站式满足您的视频监控与直播需求。支持 RTMP / RTSP / SRT 等主流流媒体协议。</p>
+                <h1 data-i18n="hero_title"><span>第一视角操作视频</span> 采集神器</h1>
+                <p data-i18n="hero_desc">通过第一视角操作视频解决具身智能操作难题。双手检测自动触发录制/推流，大规模人类第一视角操作视频数据的核心采集工具。支持 RTMP / RTSP / SRT 等主流流媒体协议。</p>
                 <div class="hero-actions">
                     <a href="#download" class="btn btn-primary" data-i18n="hero_btn_download">&#x2B07; 下载 APK</a>
                     <a href="https://github.com/nilgpt2024/Camera-Stream-Monitor" target="_blank" class="btn btn-outline" data-i18n="hero_btn_source">&#x1F4BB; 查看源码</a>
                 </div>
                 <div class="hero-badges">
-                    <span class="badge" data-i18n="badge_multi_cam">&#128247; 多摄像头支持</span>
+                    <span class="badge" data-i18n="badge_pov">&#128248; 第一视角采集</span>
+                    <span class="badge" data-i18n="badge_dual_hand">&#129504; 双手检测自动录</span>
+                    <span class="badge" data-i18n="badge_embodied">&#129302; 具身智能数据</span>
                     <span class="badge" data-i18n="badge_protocols">&#128225; RTMP/RTSP/SRT</span>
-                    <span class="badge" data-i18n="badge_record">&#128190; 本地录制</span>
+                    <span class="badge" data-i18n="badge_auto_trigger">&#9889; 自动触发推流</span>
                     <span class="badge" data-i18n="badge_privacy">&#128274; 隐私优先</span>
                 </div>
             </div>
@@ -690,16 +811,78 @@
         </div>
     </section>
 
+    <!-- POV: First-Person Video Collection -->
+    <section class="pov-section" id="pov">
+        <div class="pov-inner">
+            <div class="pov-layout">
+                <div class="pov-content">
+                    <h3 data-i18n="pov_title">第一视角操作视频采集</h3>
+                    <p data-i18n="pov_desc">专为具身智能（Embodied AI）训练数据采集设计。通过手机第一视角摄像头，结合 AI 双手检测技术，实现操作视频的自动化采集与推流。当检测到双手进入画面时自动开始录制或推流，双手离开后自动停止 —— 真正的「佩戴即采，动手即录」。</p>
+                    <div class="pov-highlights">
+                        <div class="pov-highlight-item">
+                            <div class="pov-highlight-icon" style="background:#EDE7F6;color:#512DA8;">&#129504;</div>
+                            <div class="pov-highlight-text">
+                                <strong data-i18n="pov_hl_1_title">双手检测自动触发</strong>
+                                <span data-i18n="pov_hl_1_desc">基于 MediaPipe Hand Landmarker，检测到双手同时出现时自动开始录制/推流</span>
+                            </div>
+                        </div>
+                        <div class="pov-highlight-item">
+                            <div class="pov-highlight-icon" style="background:#E3F2FD;color:#1976D2;">&#128248;</div>
+                            <div class="pov-highlight-text">
+                                <strong data-i18n="pov_hl_2_title">第一视角数据采集</strong>
+                                <span data-i18n="pov_hl_2_desc">模拟人类操作者视角，为机器人操作策略学习提供高质量训练数据</span>
+                            </div>
+                        </div>
+                        <div class="pov-highlight-item">
+                            <div class="pov-highlight-icon" style="background:#E0F7FA;color:#00838F;">&#128225;</div>
+                            <div class="pov-highlight-text">
+                                <strong data-i18n="pov_hl_3_title">多协议实时推流</strong>
+                                <span data-i18n="pov_hl_3_desc">支持 RTMP/RTSP/SRT 推流到服务器，边采集边传输，适合大规模数据收集</span>
+                            </div>
+                        </div>
+                        <div class="pov-highlight-item">
+                            <div class="pov-highlight-icon" style="background:#E8F5E9;color:#2E7D32;">&#129302;</div>
+                            <div class="pov-highlight-text">
+                                <strong data-i18n="pov_hl_4_title">具身智能核心工具</strong>
+                                <span data-i18n="pov_hl_4_desc">解决具身智能操作难题，大规模人类第一视角操作视频的主要训练来源</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pov-video-wrapper">
+                    <video id="povDemoVideo" controls preload="metadata" poster="assets/screenshot-1.png">
+                        <source src="assets/video.mp4" type="video/mp4">
+                        您的浏览器不支持视频播放
+                    </video>
+                    <div class="pov-video-overlay">
+                        <button class="pov-play-btn" id="povPlayBtn" title="播放/暂停">&#9654;</button>
+                        <span class="pov-video-label" data-i18n="pov_video_label">第一视角操作演示视频</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Features -->
     <section class="section" id="features">
         <div class="section-header">
             <span class="section-tag">FEATURES</span>
             <h2 class="section-title" data-i18n="features_title">强大的功能特性</h2>
-            <p class="section-desc" data-i18n="features_desc">从摄像头采集到网络推流，提供完整的视频处理能力</p>
+            <p class="section-desc" data-i18n="features_desc">从第一视角采集到 AI 双手检测触发录制，提供完整的具身智能数据采集能力</p>
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon blue">&#128247;</div>
+                <div class="feature-icon purple">&#129504;</div>
+                <h3 data-i18n="feat_dual_hand_title">双手检测自动录制</h3>
+                <p data-i18n="feat_dual_hand_desc">基于 MediaPipe Hand Landmarker，当检测到双手同时进入画面时自动开始录制或推流，双手离开后自动停止。专为第一视角操作视频采集优化。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon blue">&#128248;</div>
+                <h3 data-i18n="feat_pov_title">第一视角采集模式</h3>
+                <p data-i18n="feat_pov_desc">手机佩戴式第一视角摄像头采集，模拟人类操作者视角，为具身智能训练提供高质量第一人称操作数据。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon cyan">&#128225;</div>
                 <h3 data-i18n="feat_cam_title">多摄像头管理</h3>
                 <p data-i18n="feat_cam_desc">支持前置和后置摄像头独立管理，可同时开启双摄模式进行前后画面同步录制。</p>
             </div>
@@ -728,6 +911,16 @@
                 <h3 data-i18n="feat_webdav_title">WebDAV 云存储</h3>
                 <p data-i18n="feat_webdav_desc">支持 WebDAV 协议自动上传录制文件到 NAS 或云存储服务器。</p>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon blue">&#129302;</div>
+                <h3 data-i18n="feat_ai_title">AI 智能检测</h3>
+                <p data-i18n="feat_ai_desc">基于 Google MediaPipe，支持<strong>双手同时检测</strong>、人脸检测、姿态检测（33 关键点）、人像分割。双手检测是第一视角自动录制的核心能力。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon purple">&#9889;</div>
+                <h3 data-i18n="feat_auto_trigger_title">自动触发录制</h3>
+                <p data-i18n="feat_auto_trigger_desc">AI 检测到目标时自动开始录制或推流，目标消失后自动停止，支持延迟防误触发。</p>
+            </div>
         </div>
     </section>
 
@@ -737,21 +930,21 @@
             <div class="section-header">
                 <span class="section-tag">WHY CHOOSE US</span>
                 <h2 class="section-title" data-i18n="adv_title">为什么选择我们</h2>
-                <p class="section-desc" data-i18n="adv_desc">六大核心优势，让视频监控更简单高效</p>
+                <p class="section-desc" data-i18n="adv_desc">六大核心优势，让第一视角操作视频采集更高效</p>
             </div>
             <div class="advantages-grid">
                 <div class="advantage-item">
                     <div class="advantage-num">1</div>
                     <div class="advantage-content">
-                        <h3 data-i18n="adv_1_title">完全本地化，隐私无忧</h3>
-                        <p data-i18n="adv_1_desc">所有数据存储在您的本地设备上，不收集任何个人身份信息。不运营云服务器，您的数据完全由您掌控。</p>
+                        <h3 data-i18n="adv_1_title">具身智能数据采集神器</h3>
+                        <p data-i18n="adv_1_desc">通过第一视角操作视频解决具身智能操作难题。大规模人类第一视角操作视频数据作为主要训练来源，本软件是专业的第一视角视频采集工具。</p>
                     </div>
                 </div>
                 <div class="advantage-item">
                     <div class="advantage-num">2</div>
                     <div class="advantage-content">
-                        <h3 data-i18n="adv_2_title">零依赖推流体验</h3>
-                        <p data-i18n="adv_2_desc">内置 RTSP 直连模式，无需配置任何外部服务器即可在局域网内实现视频传输，开箱即用。</p>
+                        <h3 data-i18n="adv_2_title">双手检测，自动录制/推流</h3>
+                        <p data-i18n="adv_2_desc">基于 MediaPipe Hand Landmarker 实现双手同时检测。只要检测到双手就能自动开始录制或推流，双手离开画面后自动停止 —— 佩戴即采，动手即录。</p>
                     </div>
                 </div>
                 <div class="advantage-item">
@@ -834,6 +1027,10 @@
                 <p data-i18n="tech_rootencoder">高效音视频编码器</p>
             </div>
             <div class="tech-item">
+                <h4>MediaPipe</h4>
+                <p data-i18n="tech_mediapipe">Google AI 检测框架</p>
+            </div>
+            <div class="tech-item">
                 <h4>Kotlin Coroutines</h4>
                 <p data-i18n="tech_coroutines">异步编程框架</p>
             </div>
@@ -861,7 +1058,7 @@
         <div class="download-inner">
             <span class="section-tag" style="background:rgba(255,255,255,0.12);color:white;">DOWNLOAD</span>
             <h2 class="section-title" data-i18n="dl_title">立即下载体验</h2>
-            <p class="section-desc" data-i18n="dl_desc">选择适合您的安装方式，开始使用 Camera Stream Monitor</p>
+            <p class="section-desc" data-i18n="dl_desc">开始使用第一视角操作视频采集神器，为具身智能贡献训练数据</p>
 
             <div class="download-cards">
                 <div class="download-card">
@@ -908,22 +1105,39 @@
     const i18n = {
         zh: {
             lang_label: '中文',
-            page_title: 'Camera Stream Monitor - 摄像头流媒体监控',
+            page_title: '第一视角操作视频采集神器 - Camera Stream Monitor',
+            nav_pov: '第一视角采集',
             nav_features: '功能特性',
             nav_advantages: '核心优势',
             nav_screenshots: '应用截图',
-            nav_tech: '技术架构',
             nav_download: '立即下载',
-            hero_title: '专业的 <span>摄像头流媒体监控</span> 工具',
-            hero_desc: '实时视频预览、多协议推流、高清录制，一站式满足您的视频监控与直播需求。支持 RTMP / RTSP / SRT 等主流流媒体协议。',
+            hero_title: '<span>第一视角操作视频</span> 采集神器',
+            hero_desc: '通过第一视角操作视频解决具身智能操作难题。双手检测自动触发录制/推流，大规模人类第一视角操作视频数据的核心采集工具。支持 RTMP / RTSP / SRT 等主流流媒体协议。',
             hero_btn_download: '\u2B07 下载 APK',
             hero_btn_source: '💻 查看源码',
-            badge_multi_cam: '\uD83D\uDCF7 多摄像头支持',
+            badge_pov: '\uD83D\uDCF8 第一视角采集',
+            badge_dual_hand: '\uD83E\uDD38 双手检测自动录',
+            badge_embodied: '\uD83E\uDD16 具身智能数据',
             badge_protocols: '\uD83D\uDC21 RTMP/RTSP/SRT',
-            badge_record: '\uD83D\uDCBE 本地录制',
+            badge_auto_trigger: '\u26A1 自动触发推流',
             badge_privacy: '\uD83D\uDD10 隐私优先',
+            pov_title: '第一视角操作视频采集',
+            pov_desc: '专为具身智能（Embodied AI）训练数据采集设计。通过手机第一视角摄像头，结合 AI 双手检测技术，实现操作视频的自动化采集与推流。当检测到双手进入画面时自动开始录制或推流，双手离开后自动停止 —— 真正的「佩戴即采，动手即录」。',
+            pov_hl_1_title: '双手检测自动触发',
+            pov_hl_1_desc: '基于 MediaPipe Hand Landmarker，检测到双手同时出现时自动开始录制/推流',
+            pov_hl_2_title: '第一视角数据采集',
+            pov_hl_2_desc: '模拟人类操作者视角，为机器人操作策略学习提供高质量训练数据',
+            pov_hl_3_title: '多协议实时推流',
+            pov_hl_3_desc: '支持 RTMP/RTSP/SRT 推流到服务器，边采集边传输，适合大规模数据收集',
+            pov_hl_4_title: '具身智能核心工具',
+            pov_hl_4_desc: '解决具身智能操作难题，大规模人类第一视角操作视频的主要训练来源',
+            pov_video_label: '第一视角操作演示视频',
             features_title: '强大的功能特性',
-            features_desc: '从摄像头采集到网络推流，提供完整的视频处理能力',
+            features_desc: '从第一视角采集到 AI 双手检测触发录制，提供完整的具身智能数据采集能力',
+            feat_dual_hand_title: '双手检测自动录制',
+            feat_dual_hand_desc: '基于 MediaPipe Hand Landmarker，当检测到双手同时进入画面时自动开始录制或推流，双手离开后自动停止。专为第一视角操作视频采集优化。',
+            feat_pov_title: '第一视角采集模式',
+            feat_pov_desc: '手机佩戴式第一视角摄像头采集，模拟人类操作者视角，为具身智能训练提供高质量第一人称操作数据。',
             feat_cam_title: '多摄像头管理',
             feat_cam_desc: '支持前置和后置摄像头独立管理，可同时开启双摄模式进行前后画面同步录制。',
             feat_stream_title: '多协议推流',
@@ -936,12 +1150,16 @@
             feat_p2p_desc: '无需中转服务器，通过 RTSP 协议实现设备间点对点直连传输。',
             feat_webdav_title: 'WebDAV 云存储',
             feat_webdav_desc: '支持 WebDAV 协议自动上传录制文件到 NAS 或云存储服务器。',
+            feat_ai_title: 'AI 智能检测',
+            feat_ai_desc: '基于 Google MediaPipe，支持双手同时检测、人脸检测、姿态检测（33 关键点）、人像分割。双手检测是第一视角自动录制的核心能力。',
+            feat_auto_trigger_title: '自动触发录制',
+            feat_auto_trigger_desc: 'AI 检测到目标时自动开始录制或推流，目标消失后自动停止，支持延迟防误触发。双手检测模式下实现「动手即录」。',
             adv_title: '为什么选择我们',
-            adv_desc: '六大核心优势，让视频监控更简单高效',
-            adv_1_title: '完全本地化，隐私无忧',
-            adv_1_desc: '所有数据存储在您的本地设备上，不收集任何个人身份信息。不运营云服务器，您的数据完全由您掌控。',
-            adv_2_title: '零依赖推流体验',
-            adv_2_desc: '内置 RTSP 直连模式，无需配置任何外部服务器即可在局域网内实现视频传输，开箱即用。',
+            adv_desc: '六大核心优势，让第一视角操作视频采集更高效',
+            adv_1_title: '具身智能数据采集神器',
+            adv_1_desc: '通过第一视角操作视频解决具身智能操作难题。大规模人类第一视角操作视频数据作为主要训练来源，本软件是专业的第一视角视频采集工具。',
+            adv_2_title: '双手检测，自动录制/推流',
+            adv_2_desc: '基于 MediaPipe Hand Landmarker 实现双手同时检测。只要检测到双手就能自动开始录制或推流，双手离开画面后自动停止 —— 佩戴即采，动手即录。',
             adv_3_title: '专业级播放引擎',
             adv_3_desc: '基于 Google Media3 ExoPlayer 构建，支持 RTMP / RTSP / HLS / DASH / 本地文件等多种格式播放。',
             adv_4_title: '灵活的参数配置',
@@ -961,6 +1179,7 @@
             tech_camerax: 'Google 现代摄像头 API',
             tech_exoplayer: '专业视频播放引擎',
             tech_rootencoder: '高效音视频编码器',
+            tech_mediapipe: 'Google AI 检测框架',
             tech_coroutines: '异步编程框架',
             tech_md3: '现代 UI 设计系统',
             tech_mvvm: '清晰的代码结构',
@@ -986,22 +1205,39 @@
         },
         en: {
             lang_label: 'EN',
-            page_title: 'Camera Stream Monitor - Video Streaming & Monitoring',
+            page_title: 'First-Person POV Video Collection Tool - Camera Stream Monitor',
+            nav_pov: 'POV Collection',
             nav_features: 'Features',
             nav_advantages: 'Advantages',
             nav_screenshots: 'Screenshots',
-            nav_tech: 'Tech Stack',
             nav_download: 'Download',
-            hero_title: 'Professional <span>Camera Stream Monitor</span> Tool',
-            hero_desc: 'Real-time video preview, multi-protocol streaming, HD recording — an all-in-one solution for video surveillance and live streaming. Supports RTMP / RTSP / SRT protocols.',
+            hero_title: '<span>First-Person POV Video</span> Collection Tool',
+            hero_desc: 'Solve embodied AI operation challenges through first-person POV videos. Dual-hand detection auto-triggers recording/streaming — the core tool for large-scale human first-person operation video data collection. Supports RTMP / RTSP / SRT protocols.',
             hero_btn_download: '\u2B07 Download APK',
             hero_btn_source: '💻 View Source',
-            badge_multi_cam: '\uD83D\uDCF7 Multi-Camera Support',
+            badge_pov: '\uD83D\uDCF8 First-Person POV',
+            badge_dual_hand: '\uD83E\uDD38 Dual-Hand Auto Record',
+            badge_embodied: '\uD83E\uDD16 Embodied AI Data',
             badge_protocols: '\uD83D\uDC21 RTMP/RTSP/SRT',
-            badge_record: '\uD83D\uDCBE Local Recording',
+            badge_auto_trigger: '\u26A1 Auto Trigger Stream',
             badge_privacy: '\uD83D\uDD10 Privacy First',
+            pov_title: 'First-Person POV Operation Video Collection',
+            pov_desc: 'Designed for Embodied AI training data collection. Combines phone first-person camera with AI dual-hand detection for automated video capture and streaming. Automatically starts recording/streaming when both hands are detected, stops when they leave — truly "wear and collect, act and record".',
+            pov_hl_1_title: 'Dual-Hand Auto Trigger',
+            pov_hl_1_desc: 'Based on MediaPipe Hand Landmarker, auto-starts recording/streaming when both hands appear simultaneously',
+            pov_hl_2_title: 'First-Person Data Collection',
+            pov_hl_2_desc: 'Simulates human operator perspective, providing high-quality training data for robot operation policy learning',
+            pov_hl_3_title: 'Multi-Protocol Live Streaming',
+            pov_hl_3_desc: 'Supports RTMP/RTSP/SRT streaming to servers, collect and transmit simultaneously for large-scale data gathering',
+            pov_hl_4_title: 'Embodied AI Core Tool',
+            pov_hl_4_desc: 'Solves embodied AI operation challenges, the primary source of large-scale human first-person operation video data',
+            pov_video_label: 'First-Person POV Demo Video',
             features_title: 'Powerful Features',
-            features_desc: 'Complete video processing pipeline from camera capture to network streaming',
+            features_desc: 'From first-person capture to AI dual-hand triggered recording — complete Embodied AI data collection pipeline',
+            feat_dual_hand_title: 'Dual-Hand Auto Recording',
+            feat_dual_hand_desc: 'Powered by MediaPipe Hand Landmarker. Auto-starts recording/streaming when both hands enter the frame, auto-stops when they leave. Optimized for first-person POV video collection.',
+            feat_pov_title: 'First-Person POV Mode',
+            feat_pov_desc: 'Wearable phone-based first-person camera capture. Simulates human operator perspective, providing high-quality first-person data for Embodied AI training.',
             feat_cam_title: 'Multi-Camera Management',
             feat_cam_desc: 'Independent front and rear camera management with dual-camera mode for simultaneous recording.',
             feat_stream_title: 'Multi-Protocol Streaming',
@@ -1014,12 +1250,16 @@
             feat_p2p_desc: 'No relay server needed. Peer-to-peer direct transfer between devices via RTSP protocol.',
             feat_webdav_title: 'WebDAV Cloud Storage',
             feat_webdav_desc: 'Auto-upload recordings to NAS or cloud storage servers via WebDAV protocol.',
+            feat_ai_title: 'AI Smart Detection',
+            feat_ai_desc: 'Powered by Google MediaPipe — dual-hand simultaneous detection, face detection, pose detection (33 keypoints), and selfie segmentation. Dual-hand detection is the core capability for first-person auto-recording.',
+            feat_auto_trigger_title: 'Auto-Trigger Recording',
+            feat_auto_trigger_desc: 'Automatically start recording/streaming when AI detects a target, auto-stop when target leaves. Configurable delay to prevent false triggers. Dual-hand mode enables "act and record".',
             adv_title: 'Why Choose Us',
-            adv_desc: 'Six core advantages making video monitoring simpler and more efficient',
-            adv_1_title: 'Fully Local, Privacy-Focused',
-            adv_1_desc: 'All data stays on your local device. No personal info collected. No cloud servers — you are in full control of your data.',
-            adv_2_title: 'Zero-Dependency Streaming',
-            adv_2_desc: 'Built-in RTSP direct mode enables LAN video transfer without any external server configuration. Works out of the box.',
+            adv_desc: 'Six core advantages making first-person POV video collection more efficient',
+            adv_1_title: 'Embodied AI Data Collection Tool',
+            adv_1_desc: 'Solve embodied AI operation challenges through first-person POV videos. Large-scale human first-person video data as the primary training source — this is the professional collection tool.',
+            adv_2_title: 'Dual-Hand Detection, Auto Record/Stream',
+            adv_2_desc: 'Based on MediaPipe Hand Landmarker for dual-hand simultaneous detection. Automatically starts recording/streaming when both hands are detected, stops when they leave — wear and collect, act and record.',
             adv_3_title: 'Professional Playback Engine',
             adv_3_desc: 'Powered by Google Media3 ExoPlayer. Supports RTMP / RTSP / HLS / DASH / local files and more.',
             adv_4_title: 'Flexible Configuration',
@@ -1039,13 +1279,14 @@
             tech_camerax: "Google's Modern Camera API",
             tech_exoplayer: 'Professional Video Player Engine',
             tech_rootencoder: 'Efficient AV Encoder',
+            tech_mediapipe: 'Google AI Detection Framework',
             tech_coroutines: 'Async Programming Framework',
             tech_md3: 'Modern UI Design System',
             tech_mvvm: 'Clean Code Architecture',
             tech_viewbinding: 'Type-Safe View Access',
             tech_okhttp: 'High-Performance HTTP Client',
             dl_title: 'Download Now',
-            dl_desc: 'Choose your preferred installation method to start using Camera Stream Monitor',
+            dl_desc: 'Start using the First-Person POV Video Collection Tool and contribute training data for Embodied AI',
             dl_apk_title: 'Direct APK Install',
             dl_apk_desc: 'Download the APK file and install directly on your Android device',
             dl_apk_btn: '\u2B07 Download Release APK',
@@ -1111,6 +1352,23 @@
             }
         });
     });
+
+    // POV Video play button
+    const povVideo = document.getElementById('povDemoVideo');
+    const povPlayBtn = document.getElementById('povPlayBtn');
+    if (povVideo && povPlayBtn) {
+        povPlayBtn.addEventListener('click', () => {
+            if (povVideo.paused) {
+                povVideo.play();
+                povPlayBtn.innerHTML = '&#9208;';
+            } else {
+                povVideo.pause();
+                povPlayBtn.innerHTML = '&#9654;';
+            }
+        });
+        povVideo.addEventListener('play', () => { povPlayBtn.innerHTML = '&#9208;'; });
+        povVideo.addEventListener('pause', () => { povPlayBtn.innerHTML = '&#9654;'; });
+    }
     </script>
 </body>
 </html>
